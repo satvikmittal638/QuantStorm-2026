@@ -39,7 +39,7 @@ Round 1..5 Sequence:
 ```
 
 1. **Coin Reveals**: 4 private coins revealed per player ($20$ private coins total per player across 5 rounds).
-2. **First-Price Tactical Energy (TE) Power Auction**: Players bid from their 100 TE endowment on game-altering superpowers (`FORESIGHT`, `SUBSTITUTE`, `TRICK_ROOM`, `STEALTH_ROCK`, `TRANSFORM`). Unspent TE converts to terminal salvage at $0.08\text{ ticks/TE}$.
+2. **First-Price Tactical Energy (TE) Power Auction**: Players bid from their 100 TE endowment on game-altering superpowers (`FORESIGHT`, `SUBSTITUTE`, `TRICK_ROOM`, `STEALTH_ROCK`, `TRANSFORM`). Unspent TE converts to terminal salvage at $0.08\text{ ticks per TE}$.
 3. **6-Turn Interactive Negotiation**: Continuous two-way quote-and-counter ($T_1 \dots T_6$) between Maker and Taker to establish contract settlement prices.
 4. **Portfolio Settlement**: Simultaneous terminal settlement with Maker obligation payouts, forced-fill fees ($2.0$), option refunds, and TE salvage yield.
 
@@ -98,8 +98,12 @@ straddle yield           SUBSTITUTE holdings     at T6 forced-fill              
 - Calibrates from $0.50$ (high confidence) to $0.85$ (against liars and shift campers) to preserve Turn-6 optionality.
 
 ### 6. Tactical Energy (TE) Valuation & Auction Sizing
-- Unspent TE earns guaranteed terminal salvage ($0.08\text{ ticks/TE}$).
-- Each power is priced against incremental PnL advantage ($V(\text{FORESIGHT}) \approx 0.75\sqrt{\min(16, 4r)}$, $V(\text{SUBSTITUTE}) = 0.5(r+1)$, $V(\text{STEALTH\_ROCK}) = 0.5(6-r)$, $V(\text{TRICK\_ROOM}) = 0.6/r$).
+- Unspent TE earns guaranteed terminal salvage ($0.08\text{ ticks per TE}$).
+- Each power is priced against incremental PnL advantage:
+  - `FORESIGHT`: $V(r) \approx 0.75\sqrt{\min(16, 4r)}$
+  - `SUBSTITUTE`: $V(r) = 0.5(r + 1)$
+  - `STEALTH_ROCK`: $V(r) = 0.5(6 - r)$
+  - `TRICK_ROOM`: $V(r) = 0.6 / r$
 - Bids are shaded dynamically ($0.20 \dots 0.35$); broke opponents ($\text{TE}_{\text{theirs}} \le 0$) are sniped for $1\text{ TE}$.
 
 ---

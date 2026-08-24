@@ -46,8 +46,8 @@ Each deal consists of **5 sequential rounds** ($r \in \{1, 2, 3, 4, 5\}$). Each 
      - **Turn 5 (Maker)**: Responds to Taker's counter.
      - **Turn 6 (Taker)**: Final action. Taker can accept or counter.
    - If Turn 6 concludes with a counter rather than an acceptance, a **Forced Fill** occurs at the midpoint of the final quote plus active shift powers:
-     $$\text{fill\_price} = \left\lfloor \frac{\text{bid}_6 + \text{ask}_6}{2} \right\rfloor + \text{shift}$$
-     The last quoter is forced to be **Short** and pays a mandatory $\text{FORCED\_FILL\_FEE} = 2.0\text{ ticks}$.
+     $$\text{Price}_{\text{fill}} = \left\lfloor \frac{\text{bid}_6 + \text{ask}_6}{2} \right\rfloor + \text{shift}$$
+     The last quoter is forced to be **Short** and pays a mandatory fee of $2.0\text{ ticks}$.
 
 4. **Multi-Contract Terminal Settlement**:
    At the end of Round 5, all 5 established contracts settle simultaneously against the true revealed $S$:
@@ -71,7 +71,7 @@ When the Maker posts a quote $(\text{bid}, \text{ask})$ of width $w = \text{ask}
   - If $S$ misses the quote, Maker pays Taker: $-3.0 \times p_w$
   - In all cases, Maker pays a width penalty: $-0.22 \times (w - \text{floor})$
 
-The game engine computes the baseline pricing probability $p_w = \text{config.straddle\_prob}(r, w)$ using an unconditioned symmetric step-function over $40 - 4r$ coins.
+The game engine computes the baseline pricing probability $p_w$ using an unconditioned symmetric step-function over $40 - 4r$ coins via `config.straddle_prob(r, w)`.
 
 However, our bot possesses private information ($k_{\text{mine}} + \text{Bayesian estimate of } k_{\text{theirs}}$) and controls quote parity. The true probability $p_{\text{true}}$ of straddling an arbitrary interval $[\text{lo}, \text{lo} + w]$ given $m$ total unrevealed coins is computed via exact hypergeometric combinatorics:
 
@@ -154,7 +154,7 @@ Contract Payoff with SUBSTITUTE:
          │ (Capped at -2.0)
 ```
 
-Let raw contract PnL $X \sim \mathcal{N}(\mu, \sigma^2)$ where $\mu = v - \text{price}$ and $\sigma = \sqrt{\text{unseen\_coins}}$.
+Let raw contract PnL $X \sim \mathcal{N}(\mu, \sigma^2)$ where $\mu = v - \text{price}$ and $\sigma = \sqrt{\text{unseen}}$.
 
 #### Case A: Our Bot Holds `SUBSTITUTE`
 Our terminal payoff is $\psi(X) = \max(X, -C)$ where $C = 2.0$.
@@ -209,7 +209,7 @@ where noise $\sigma_i^2 = 4(r - r_0) + \frac{2.0}{\max(0.2, p_{\text{honest}})}$
 
 In turns 2 through 5, accepting an offer early eliminates the continuation value of Turn 6. The bot evaluates acceptance against an adaptive hurdle:
 
-$$\text{Hurdle} = \text{ride\_fraction} \times (\text{ask} - \text{bid})$$
+$$\text{Hurdle} = \text{ride} \times (\text{ask} - \text{bid})$$
 
 ```
 Hurdle Fraction Selection Logic:
