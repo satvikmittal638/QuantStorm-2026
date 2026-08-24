@@ -1,9 +1,6 @@
 # Quantitative Research Lab & Evaluation Framework
 
-**Author:** Satvik Mittal (IIT Kanpur, Roll No: 240943)  
-**Email:** [satvikmittal638@gmail.com](mailto:satvikmittal638@gmail.com)
-
-The `lab/` directory provides an experimental harness, benchmarking suite, and opponent simulation panels for evaluating market-making algorithms in the QuantStorm 2026 environment.
+The `lab/` directory provides a research harness, benchmarking suite, and opponent simulation panels for evaluating market-making algorithms in the QuantStorm 2026 environment.
 
 ---
 

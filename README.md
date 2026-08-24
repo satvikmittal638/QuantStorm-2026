@@ -1,37 +1,53 @@
-# QuantStorm 2026 — Divided Oracle Market Maker
+# QuantStorm 2026 — Divided Oracle Algorithmic Market Maker
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Benchmark: +122.7 PnL/Match](https://img.shields.io/badge/Scoreboard-+122.7%20PnL%2Fmatch-brightgreen.svg)](#benchmark--evaluation-results)
-[![Institution: IIT Kanpur](https://img.shields.io/badge/Institution-IIT%20Kanpur-red.svg)](https://www.iitk.ac.in/)
+[![Benchmark: +122.7 PnL/Match](https://img.shields.io/badge/Scoreboard-+122.7%20PnL%2Fmatch-brightgreen.svg)](#3-benchmark--evaluation-results)
 
 > Autonomous quantitative market maker and algorithmic game theory engine engineered for **QuantStorm 2026 Round 1: "Divided Oracle"**.
 
 ---
 
-## Author & Maintainer
-
-- **Satvik Mittal**
-- **Indian Institute of Technology Kanpur (IIT Kanpur)**
-- **Roll Number:** `240943`
-- **GitHub:** [@satvikmittal638](https://github.com/satvikmittal638)
-- **Email:** [satvikmittal638@gmail.com](mailto:satvikmittal638@gmail.com)
-
----
-
-## 1. Executive Summary
-
-In the **Divided Oracle** trading arena, two algorithmic agents trade financial contracts over a hidden asset value $S$, determined by the sum of 40 fair $\pm 1$ coins ($S = \sum_{i=1}^{40} C_i$). Information is asymmetric and revealed sequentially over 5 rounds. Each round features:
-1. **Coin Reveals**: 4 private coins revealed per player ($20$ private coins total per player).
-2. **First-Price Tactical Energy (TE) Power Auction**: Auctioning one game-altering superpower per round (`FORESIGHT`, `SUBSTITUTE`, `TRICK_ROOM`, `STEALTH_ROCK`, `TRANSFORM`).
-3. **6-Turn Interactive Negotiation**: Dynamic continuous two-way quoting ($T_1 \dots T_6$) between Maker and Taker to establish contract settlement prices.
-4. **Portfolio Settlement**: Simultaneous terminal settlement with Maker obligation payouts, forced-fill fees, option refunds, and TE salvage yield.
-
-`qs_bot.py` (*Divided Oracle Hybrid Peak Engine*) solves the environment from first principles, integrating **exact combinatorial lattice valuation**, **analytical Bachelier option modeling**, **game-theoretic endgame dominance**, and **real-time Bayesian belief profiling**.
+## Table of Contents
+- [1. Executive Summary & Problem Formulation](#1-executive-summary--problem-formulation)
+- [2. Strategy Architecture & Core Quantitative Edges](#2-strategy-architecture--core-quantitative-edges)
+  - [Edge 1: Exact Parity-Lattice Straddle & Hypergeometric Pricing](#1-exact-parity-lattice-straddle--hypergeometric-pricing)
+  - [Edge 2: Analytical Bachelier Option Model (SUBSTITUTE)](#2-analytical-bachelier-option-model-substitute)
+  - [Edge 3: Game-Theoretic Turn-6 Forced-Fill Dominance](#3-game-theoretic-turn-6-forced-fill-dominance)
+  - [Edge 4: Bayesian Belief Profiling & Physical Forensics](#4-bayesian-belief-profiling--physical-forensics)
+  - [Edge 5: Adaptive Information-Driven Ride Hurdle](#5-adaptive-information-driven-ride-hurdle)
+  - [Edge 6: Tactical Energy (TE) Valuation & Auction Sizing](#6-tactical-energy-te-valuation--auction-sizing)
+- [3. Benchmark & Evaluation Results](#3-benchmark--evaluation-results)
+- [4. Repository Structure & Tour](#4-repository-structure--tour)
+- [5. Quickstart & How to Run](#5-quickstart--how-to-run)
+- [6. Mathematical Deep Dive](#6-mathematical-deep-dive)
+- [7. License](#7-license)
 
 ---
 
-## 2. Core Quantitative Edges
+## 1. Executive Summary & Problem Formulation
+
+In the **Divided Oracle** trading arena, two algorithmic agents trade financial contracts over a hidden asset value $S$, determined by the sum of 40 fair $\pm 1$ coins ($S = \sum_{i=1}^{40} C_i$). Information is asymmetric and revealed sequentially over 5 rounds.
+
+### 1.1 Deal Lifecycle
+```
+Round 1..5 Sequence:
+┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐     ┌─────────────────┐
+│ 1. Coin Reveal  │ ──► │ 2. Power Auction│ ──► │ 3. Negotiation  │ ──► │ 4. S-Settlement │
+│ (4 coins/player)│     │ (Blind 1st-price│     │ (≤6 turns quotes│     │ (End of Round 5)│
+└─────────────────┘     └─────────────────┘     └─────────────────┘     └─────────────────┘
+```
+
+1. **Coin Reveals**: 4 private coins revealed per player ($20$ private coins total per player across 5 rounds).
+2. **First-Price Tactical Energy (TE) Power Auction**: Players bid from their 100 TE endowment on game-altering superpowers (`FORESIGHT`, `SUBSTITUTE`, `TRICK_ROOM`, `STEALTH_ROCK`, `TRANSFORM`). Unspent TE converts to terminal salvage at $0.08\text{ ticks/TE}$.
+3. **6-Turn Interactive Negotiation**: Continuous two-way quote-and-counter ($T_1 \dots T_6$) between Maker and Taker to establish contract settlement prices.
+4. **Portfolio Settlement**: Simultaneous terminal settlement with Maker obligation payouts, forced-fill fees ($2.0$), option refunds, and TE salvage yield.
+
+`qs_bot.py` (*Divided Oracle Hybrid Peak Engine*) solves this sequential game from first principles, integrating **exact combinatorial lattice valuation**, **analytical Bachelier option modeling**, **game-theoretic endgame dominance**, and **real-time Bayesian belief profiling**.
+
+---
+
+## 2. Strategy Architecture & Core Quantitative Edges
 
 ```
                                   ┌─────────────────────────────┐
@@ -53,31 +69,38 @@ straddle yield           SUBSTITUTE holdings     at T6 forced-fill              
 ```
 
 ### 1. Exact Parity-Lattice Straddle & Hypergeometric Pricing
-- $S$ is strictly **even-parity** ($S \equiv 0 \pmod 2$). Aligning the opening quote's lower bound to even values doubles the effective coverage density on tight spreads.
-- The engine prices maker obligations via a canonical baseline step function `config.straddle_prob(r, w)`. `qs_bot.py` evaluates true hypergeometric probability $p_{\text{true}}$ directly using combinatorics:
-  $$p_{\text{true}} = \frac{1}{2^m} \sum_{j \equiv m \pmod 2} \binom{m}{\frac{j+m}{2}}$$
-  extracting guaranteed positive expected obligation yield: $\mathbb{E}[\text{EV}] = 3.0 \times (p_{\text{true}} - p_{\text{priced}}) - 0.18 \times (w - \text{floor})$.
+- **Even Parity Property**: $S = \sum_{i=1}^{40} C_i \equiv 0 \pmod 2$. $S$ is strictly even.
+- **Straddle Yield Extraction**: Maker obligation rewards the Maker when $S \in [\text{lo}, \text{lo} + w]$:
+  $$\text{Payout} = 3.0 \times (1 - p_{\text{priced}}) \quad \text{vs} \quad \text{Miss Penalty} = -3.0 \times p_{\text{priced}}$$
+- By forcing the lower bound $\text{lo}$ to be **even**, an opening width $w=2$ covers **two reachable points** (e.g. $\{0, 2\}$) rather than one, doubling straddle probability for free.
+- Computes exact combinatorial probability $p_{\text{true}}$ via binomial coefficients:
+  $$p_{\text{true}}(m, \text{lo}, w, v) = \frac{1}{2^m} \sum_{\substack{j = \text{lo} - v \\ (j - m) \equiv 0 \pmod 2}}^{\text{lo} - v + w} \binom{m}{\frac{j + m}{2}}$$
+  and solves $(w^*, \text{lo}^*)$ to maximize net expected yield against the width tax.
 
 ### 2. Analytical Bachelier Option Model (`SUBSTITUTE`)
-- `SUBSTITUTE` caps contract losses at $-2.0$ ticks.
-- Rather than using static heuristic approximations, `qs_bot.py` evaluates the continuous Gaussian integral in closed-form:
+- `SUBSTITUTE` introduces asymmetric capped losses at $-2.0\text{ ticks}$.
+- `qs_bot.py` models contract return $X \sim \mathcal{N}(\mu, \sigma^2)$ and evaluates the Gaussian payoff integral in closed form:
   $$\mathbb{E}[\max(X, -2)] = \mu \Phi\left(\frac{\mu+2}{\sigma}\right) - 2 \left(1 - \Phi\left(\frac{\mu+2}{\sigma}\right)\right) + \sigma \phi\left(\frac{\mu+2}{\sigma}\right)$$
-  ensuring precision valuation when holding or facing `SUBSTITUTE`.
+- Against an opponent holding `SUBSTITUTE`: $\mathbb{E}[\min(X, +2)] = -\mathbb{E}[\max(-X, -2)]$.
 
 ### 3. Game-Theoretic Turn-6 Forced-Fill Dominance
-- The Taker strictly acts on Turn 6 ($T_6$). Width-0 counters are legal.
+- The Taker strictly acts last at Turn 6 ($T_6$). Width-0 counters are legal.
 - At $T_6$, countering `(ask, ask)` converts the Taker into a short position filled at $\text{ask} + \text{shift} - 2.0$, strictly dominating a sell at $\text{bid}$ whenever spread $w > 2$.
-- Expected payoff: $\max(v - \text{ask}, \, \text{bid} - v, \, \text{ask} + \text{shift} - v - 2.0) \approx |\text{ask} - v| - 1.0$.
+- Effective Turn-6 Payoff: $\max(v - \text{ask}, \, \text{bid} - v, \, \text{ask} + \text{shift} - v - 2.0) \approx |\text{ask} - v| - 1.0$.
 
-### 4. Bayesian Belief Profiling & Physical Coin Constraints
-- **Physical Coin Feasibility**: Enforces $|\text{mid}| \le 4r + 1.0$ and cross-round drift limits $|\text{mid}_{r_2} - \text{mid}_{r_1}| \le 4|r_2 - r_1| + 1.0$ to detect deceptive "liar" archetypes instantly.
-- **FORESIGHT Forensics**: Cross-references opponent quote midpoints against leaked true coin samples.
-- **Adaptive Ride Hurdle**: Dynamically calibrates early-acceptance thresholds from $0.50$ (high confidence) to $0.85$ (against liars/forcers).
+### 4. Bayesian Belief Profiling & Physical Forensics
+- **Physical Coin Feasibility Bounds**: Enforces $|\text{mid}| \le 4r + 1.0$ and cross-round drift $|\text{mid}_{r_2} - \text{mid}_{r_1}| \le 4|r_2 - r_1| + 1.0$ to penalize deceptive opponents ($p_{\text{honest}} \leftarrow p_{\text{honest}} \times 0.1$).
+- **Ground-Truth FORESIGHT Forensics**: Leaked coin samples $f_{\text{sum}}$ are cross-referenced against quote midpoints ($|\text{mid} - f_{\text{sum}}| > 2.5 \implies p_{\text{honest}} \leftarrow 0.0$).
+- **Signal Fusion**: Weighted combination of FORESIGHT and historical honest quotes using inverse-variance Gaussian weighting.
 
-### 5. Tactical Energy (TE) Salvage & Decisive Power Sizing
-- Unspent TE yields guaranteed $0.08 \times \Delta\text{TE}$ terminal salvage.
-- Evaluates powers (`FORESIGHT`, `SUBSTITUTE`, `STEALTH_ROCK`, `TRICK_ROOM`) against incremental contract edge, bidding dynamically with optimal shading ($0.20 \dots 0.35$).
-- Opponents with $\text{TE}_{\text{theirs}} \le 0$ are sniped for exactly $1\text{ TE}$.
+### 5. Adaptive Information-Driven Ride Hurdle
+- Replaces static thresholds with dynamic spread fractions: $\text{Hurdle} = \text{ride} \times (\text{ask} - \text{bid})$.
+- Calibrates from $0.50$ (high confidence) to $0.85$ (against liars and shift campers) to preserve Turn-6 optionality.
+
+### 6. Tactical Energy (TE) Valuation & Auction Sizing
+- Unspent TE earns guaranteed terminal salvage ($0.08\text{ ticks/TE}$).
+- Each power is priced against incremental PnL advantage ($V(\text{FORESIGHT}) \approx 0.75\sqrt{\min(16, 4r)}$, $V(\text{SUBSTITUTE}) = 0.5(r+1)$, $V(\text{STEALTH\_ROCK}) = 0.5(6-r)$, $V(\text{TRICK\_ROOM}) = 0.6/r$).
+- Bids are shaded dynamically ($0.20 \dots 0.35$); broke opponents ($\text{TE}_{\text{theirs}} \le 0$) are sniped for $1\text{ TE}$.
 
 ---
 
@@ -131,7 +154,7 @@ Health / Timing:                   Clean            (Max Call: 4.52 ms < 50.0 ms
 
 ---
 
-## 4. Repository Structure
+## 4. Repository Structure & Tour
 
 ```
 QuantStorm-2026/
@@ -166,7 +189,7 @@ QuantStorm-2026/
 
 ---
 
-## 5. Quickstart & Usage
+## 5. Quickstart & How to Run
 
 ### Prerequisites
 - Python 3.10+ (Standard library only: `math`, `random`, `typing`, `collections`, `itertools`, `heapq`, `bisect`, `functools`).
@@ -183,7 +206,7 @@ python3 lab/scoreboard.py --bot lab/bot/qs_bot.py --quick
 ```
 
 ### Running Head-to-Head Matches (`arena.py`)
-Pit `qs_bot.py` directly against any strategy or reference bot:
+Duel `qs_bot.py` against any strategy:
 ```bash
 # Duel against the Rational Baseline
 python3 lab/arena.py --a lab/bot/qs_bot.py --b quantstorm-ps/strategies/rational.py
@@ -203,9 +226,9 @@ python3 quantstorm-ps/backtester.py \
 
 ---
 
-## 6. Mathematical Documentation
+## 6. Mathematical Deep Dive
 
-For full mathematical proofs, option model integrals, and game-theoretic matrices, refer to [docs/STRATEGY_DEEP_DIVE.md](docs/STRATEGY_DEEP_DIVE.md).
+For full derivations, option model integrals, and game-theoretic matrices, see [docs/STRATEGY_DEEP_DIVE.md](docs/STRATEGY_DEEP_DIVE.md).
 
 ---
 
