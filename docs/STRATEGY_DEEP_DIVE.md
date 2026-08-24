@@ -1,6 +1,8 @@
 # QuantStorm 2026: Comprehensive Strategy & System Deep-Dive
 ## Mathematical Modeling, Algorithmic Game Theory & Empirical Validation for "Divided Oracle"
 
+**Authors:** Satvik Mittal (IIT Kanpur) & Antigravity (Google DeepMind)
+
 ---
 
 ## 1. Executive Summary & Problem Formulation
