@@ -21,8 +21,7 @@
 - [4. Repository Structure & Tour](#4-repository-structure--tour)
 - [5. Quickstart & How to Run](#5-quickstart--how-to-run)
 - [6. Mathematical Deep Dive](#6-mathematical-deep-dive)
-- [7. Authors & Contributors](#7-authors--contributors)
-- [8. License](#8-license)
+- [7. License](#7-license)
 
 ---
 
@@ -237,18 +236,6 @@ For full derivations, option model integrals, and game-theoretic matrices, see [
 
 ---
 
-## 7. Authors & Contributors
-
-- **Satvik Mittal** — *Lead Developer & Quantitative Strategy Design*
-  - Indian Institute of Technology Kanpur (IIT Kanpur), Roll No: `240943`
-  - GitHub: [@satvikmittal638](https://github.com/satvikmittal638)
-  - Email: [satvikmittal638@gmail.com](mailto:satvikmittal638@gmail.com)
-
-- **Antigravity** — *AI Pair Programmer & Quantitative Architecture Assistant*
-  - Advanced Agentic AI Assistant, Google DeepMind
-
----
-
-## 8. License
+## 7. License
 
 This project is licensed under the [MIT License](LICENSE).

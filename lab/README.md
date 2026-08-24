@@ -1,7 +1,5 @@
 # Quantitative Research Lab & Evaluation Framework
 
-**Authors:** Satvik Mittal (IIT Kanpur) & Antigravity (Google DeepMind)
-
 The `lab/` directory provides a research harness, benchmarking suite, and opponent simulation panels for evaluating market-making algorithms in the QuantStorm 2026 environment.
 
 ---
